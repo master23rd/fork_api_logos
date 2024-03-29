@@ -18,6 +18,11 @@ app.get('test', (req, res) => {
   res.send('testing')
 })
 
+//logging middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
+
 //routes initial
 const auth = require('./routes/auth')
 
