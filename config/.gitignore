@@ -1,0 +1,7 @@
+node_modules
+config/config.env 
+_data
+
+/public/files/.DS_Store
+/src/.DS_Store
+.DS_Store
