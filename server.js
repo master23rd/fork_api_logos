@@ -1,36 +1,42 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
+const cors = require('cors')
+const path = require('path')
+const bodyParser = require('body-parser')
 
+//routes
+const auth = require('./routes/v1/auth')
+
+//local import
 const connectDB = require('./config/db')
+const { errorHandler } = require('./middleware/errorMiddleware')
 
-//register config .env
+//env config
 dotenv.config({ path: './config/config.env' })
 
-//connectdb immediately
+//database & express
 connectDB()
-
-//routes express - clouser
 const app = express()
-
-//direct routes
-app.get('test', (req, res) => {
-  res.send('testing')
-})
 
 //logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 
-//routes initial
-const auth = require('./routes/auth')
+//cors, parser and static folder
+app.use(cors())
+app.use(bodyParser.json({ limit: '500mb', type: 'application/json' }))
+app.use(bodyParser.urlencoded({ limit: '256mb', extended: true }))
+app.use('/api', express.static(path.join(__dirname, 'public')))
 
-//middleware routes
+//routes and middleware handler
 app.use('/api/v1/auth', auth)
+app.use(errorHandler)
 
+//listen port
 const PORT = process.env.PORT || 5000
-const server = app.listen(
+app.listen(
   PORT,
   console.log(`running in ${process.env.NODE_ENV} mode on port : ${PORT}`)
 )
